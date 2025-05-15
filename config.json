@@ -1,0 +1,7 @@
+{
+  "gps_port_a": "/dev/ttyACM0",
+  "gps_port_b": "/dev/ttyACM1",
+  "baudrate": 9600,
+  "server_url": "http://localhost/api/position",
+  "websocket_port": 8080
+}

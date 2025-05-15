@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NavBox GPS Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.development.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.development.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/babel-standalone@7.22.10/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+  <div id="root"></div>
+  <script type="text/babel">
+    function Dashboard() {
+      const [data, setData] = React.useState({
+        device_id: "Loading...",
+        lat: 0,
+        lon: 0,
+        heading: 0
+      });
+
+      React.useEffect(() => {
+        const ws = new WebSocket('ws://localhost:8080/api/position');
+
+        ws.onopen = () => {
+          console.log('Connected to WebSocket');
+        };
+
+        ws.onmessage = (event) => {
+          try {
+            const newData = JSON.parse(event.data);
+            if (newData.device_id) {
+              setData(newData);
+            }
+          } catch (e) {
+            console.error('Error parsing WebSocket message:', e);
+          }
+        };
+
+        ws.onerror = (error) => {
+          console.error('WebSocket error:', error);
+        };
+
+        ws.onclose = () => {
+          console.log('WebSocket disconnected');
+        };
+
+        return () => {
+          ws.close();
+        };
+      }, []);
+
+      return (
+        <div className="container mx-auto p-4">
+          <h1 className="text-3xl font-bold mb-4 text-center">NavBox GPS Dashboard</h1>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="bg-white p-4 rounded shadow">
+              <h2 className="text-lg font-semibold">Device ID</h2>
+              <p className="text-xl">{data.device_id}</p>
+            </div>
+            <div className="bg-white p-4 rounded shadow">
+              <h2 className="text-lg font-semibold">Latitude</h2>
+              <p className="text-xl">{data.lat.toFixed(6)}°</p>
+            </div>
+            <div className="bg-white p-4 rounded shadow">
+              <h2 className="text-lg font-semibold">Longitude</h2>
+              <p className="text-xl">{data.lon.toFixed(6)}°</p>
+            </div>
+            <div className="bg-white p-4 rounded shadow">
+              <h2 className="text-lg font-semibold">Heading</h2>
+              <p className="text-xl">{data.heading.toFixed(2)}°</p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<Dashboard />);
+  </script>
+</body>
+</html>

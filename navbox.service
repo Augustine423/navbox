@@ -1,0 +1,5 @@
+[Unit] Description=NavBox GPS Controller Service After=network.target
+
+[Service] ExecStart=/usr/bin/python3.11 /mdt/home/navbox/main.py WorkingDirectory=/mdt/home/navbox StandardOutput=inherit StandardError=inherit Restart=always User=navbox
+
+[Install] WantedBy=multi-user.target
