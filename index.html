@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NavBox GPS Dashboard</title>
+  <title>NavBox GNSS Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.development.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.development.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/babel-standalone@7.22.10/babel.min.js"></script>
@@ -17,7 +17,11 @@
         device_id: "Loading...",
         lat: 0,
         lon: 0,
-        heading: 0
+        heading: 0,
+        satellites: 0,
+        hdop: null,
+        sbas: false,
+        constellations: []
       });
 
       React.useEffect(() => {
@@ -53,14 +57,11 @@
 
       return (
         <div className="container mx-auto p-4">
-          <h1 className="text-3xl font-bold mb-4 text-center">NavBox GPS Dashboard</h1>
+          <h1 className="text-3xl font-bold mb-4 text-center">NavBox GNSS Dashboard</h1>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="bg-white p-4 rounded shadow">
               <h2 className="text-lg font-semibold">Device ID</h2>
-              <p className="text-xl">{data.device_id}</p>
-            </div>
-            <div className="bg-white p-4 rounded shadow">
-              <h2 className="text-lg font-semibold">Latitude</h2>
+Starting new chunk from line: 3365
               <p className="text-xl">{data.lat.toFixed(6)}°</p>
             </div>
             <div className="bg-white p-4 rounded shadow">
@@ -70,6 +71,22 @@
             <div className="bg-white p-4 rounded shadow">
               <h2 className="text-lg font-semibold">Heading</h2>
               <p className="text-xl">{data.heading.toFixed(2)}°</p>
+            </div>
+            <div className="bg-white p-4 rounded shadow">
+              <h2 className="text-lg font-semibold">Satellites</h2>
+              <p className="text-xl">{data.satellites}</p>
+            </div>
+            <div className="bg-white p-4 rounded shadow">
+              <h2 className="text-lg font-semibold">HDOP</h2>
+              <p className="text-xl">{data.hdop ? data.hdop.toFixed(2) : 'N/A'}</p>
+            </div>
+            <div className="bg-white p-4 rounded shadow">
+              <h2 className="text-lg font-semibold">SBAS</h2>
+              <p className="text-xl">{data.sbas ? 'Active' : 'Inactive'}</p>
+            </div>
+            <div className="bg-white p-4 rounded shadow">
+              <h2 className="text-lg font-semibold">Constellations</h2>
+              <p className="text-xl">{data.constellations.length > 0 ? data.constellations.join(', ') : 'None'}</p>
             </div>
           </div>
         </div>

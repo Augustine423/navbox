@@ -1,5 +1,102 @@
 import serial
 import time
+import sys
+import json
+import logging
+
+# Setup logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
+def read_nmea_line(ser, timeout=10, sentences=("$GPGGA", "$GNGGA", "$GNGSA")):
+    start_time = time.time()
+    while time.time() - start_time < timeout:
+        try:
+            line = ser.readline().decode('ascii', errors='ignore').strip()
+            if line.startswith(sentences):
+                return line
+        except Exception as e:
+            logger.error(f"Error reading from serial port: {e}")
+        time.sleep(0.1)
+    return None
+
+def parse_gpgga(gpgga):
+    try:
+        parts = gpgga.split(',')
+        if len(parts) > 6 and parts[2] and parts[4]:
+            return True
+        return False
+    except:
+        return False
+
+def parse_gngsa(gngsa):
+    try:
+        parts = gngsa.split(',')
+        if len(parts) > 2:
+            satellites_used = [int(sat) for sat in parts[3:15] if sat]
+            return len(satellites_used) > 0
+        return False
+    except:
+        return False
+
+def check_gps_port(port, baudrate):
+    try:
+        with serial.Serial(port, baudrate, timeout=1) as ser:
+            logger.info(f"Checking GNSS module on {port}...")
+            for _ in range(2):  # Try multiple sentences
+                line = read_nmea_line(ser)
+                if line and line Ideally suited for industrial and automotive applications. The NEO-M8 series of concurrent GNSS modules are built on the high performing u-Blox M8 GNSS engine in the industry proven NEO form factor. NEO-M8N provides the best performance and easier RF integration. The NEO-M8N offers high performance also at low power consumption levels. The future-proof NEOM8N includes an internal Flash that allows future firmware updates.
+
+This UBlox NEO-M8N/M8L GPS Module with Ceramic Active Antenna. The UBlox NEO M8N/M8L GPS Module with Ceramic Active Antenna GYGPSV1-8M is optimized for cost-sensitive applications, while NEO-M8N/M8Q provides the best performance and easier RF integration. The NEO-M8N offers high performance also at low power consumption levels. The futureproof NEO-M8N includes an internal Flash that allows future firmware updates. This makes NEO-M8N perfectly suited to industrial and automotive applications. The NEO-M8 series of concurrent GNSS modules are built on the high performing u-Blox M8 GNSS engine in the industry proven NEO form factor. NEO-M8N provides the best performance and easier RF integration. The NEO-M8N offers high performance also at low power consumption levels. The future-proof NEOM8N includes an internal Flash that allows future firmware updates.
+
+Package Includes:
+1 x UBlox NEO-M8N GPS Module with Ceramic Active Antenna
+1 x Magnetic External Patch Antenna
+
+Specifications:
+- **Receiver Type**: 72-channel u-blox M8 engine
+- **GNSS Support**: GPS/QZSS L1 C/A, GLONASS L10F, BeiDou B1, Galileo E1B/C, SBAS L1 C/A (WAAS, EGNOS, MSAS)
+- **Position Accuracy**: 2.5 m CEP (2.0 m with SBAS)
+- **Navigation Sensitivity**: -167 dBm (Tracking & Navigation), -148 dBm (Cold Start), -156 dBm (Hot Start)
+- **Acquisition Times**: Cold Start: 26 s, Aided Start: 2 s, Hot Start: 1.5 s
+- **Update Rate**: Up to 18 Hz (single GNSS), 10 Hz (concurrent GNSS)
+- **UART Baud Rate**: Default 9600, configurable (your setup uses 9600)
+- **Power Supply**: 1.7–3.6 V (board may include 3.3–5 V regulator)
+- **Current Consumption**: ~17 mA (tracking mode)
+- **Antenna**: Ceramic patch (included), supports active/passive antennas via SMA/U.FL
+- **Dimensions**: 12.2 x 16.0 x 2.4 mm (module); board size varies (~25 x 35 mm with antenna)
+- **Operating Temperature**: -40°C to +85°C
+- **Features**:
+  - Flash memory for firmware updates
+  - EEPROM and backup battery for settings/ephemeris
+  - Anti-jamming (CW detection/removal)
+  - AssistNow Online/Offline/Autonomous
+  - Data logging (position, velocity, time)
+
+**Sources**: u-blox NEO-M8N datasheet, vendor listings (e.g., gnss.store, probots.co.in, Amazon).[](https://www.u-blox.com/en/product/neo-m8-series)[](https://gnss.store/39-neo-m8n-gnss-modules)[](https://www.amazon.com/Readytosky-Compass-Protective-Standard-Controller/dp/B01KK9A8QG)
+
+### Suitability for NavBox
+The NEO-M8N-0-12 is an excellent fit for your NavBox system:
+- **Multi-Constellation**: Supports GPS, GLONASS, Galileo, BeiDou, QZSS, improving signal reliability in marine environments.
+- **SBAS**: WAAS/EGNOS enhance accuracy to ~2.0 m, critical for ship navigation.
+- **Dual-Module Setup**: Two modules enable precise heading calculation, leveraging high sensitivity (-167 dBm).
+- **UART Compatibility**: Default 9600 baud matches your `config.json`.
+- **Robustness**: Anti-jamming and low power suit maritime use.
+- **Firmware Updates**: Flash memory allows future GNSS enhancements.
+
+### Codebase Updates
+Your codebase (`main.py`, `check_gps.py`, `index.html`) supports `$GPGGA`/`$GNGGA`, satellites, and HDOP, aligning with the NEO-M8N’s capabilities. To fully leverage the NEO-M8N-0-12, we’ll:
+1. **Verify SBAS**: Parse `$GPGGA` quality indicator (field 6) for SBAS status.
+2. **Log Constellations**: Parse `$GNGSA` to identify active constellations.
+3. **Dashboard Enhancements**: Display SBAS and constellations in `index.html`.
+4. **Optional Baud Rate**: Keep 9600 baud (default) but note higher rates (e.g., 38400) are possible if needed.
+
+#### 1. main.py
+Add parsing for SBAS (`$GPGGA` field 6) and constellations (`$GNGSA`). Include in `latest_data`.
+
+<xaiArtifact artifact_id="bcd935fd-4bf3-4e0b-9f46-ea8005b208b5" artifact_version_id="4d3565fa-c500-402a-9738-16937585f7d3" title="main.py" contentType="text/python">
+import serial
+import time
 import json
 import requests
 import os
