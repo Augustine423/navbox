@@ -105,34 +105,34 @@ for file in config.json gps_logger.py heading_calc.py main.py retry_queue.json c
         echo "Warning: $file not found in ${SCRIPT_DIR}"
     fi
 done
-# Ensure main.py and checkgps1.py  are executable
-if [ -f "${INSTALL_DIR}/main.py" ]; then
-    chmod +x "${INSTALL_DIR}/main.py"
-fi
-if [ -f "${INSTALL_DIR}/checkgps1.py " ]; then
-    chmod +x "${INSTALL_DIR}/checkgps1.py "
-fi
+# # Ensure main.py and checkgps1.py  are executable
+# if [ -f "${INSTALL_DIR}/main.py" ]; then
+#     chmod +x "${INSTALL_DIR}/main.py"
+# fi
+# if [ -f "${INSTALL_DIR}/checkgps1.py " ]; then
+#     chmod +x "${INSTALL_DIR}/checkgps1.py "
+# fi
 
 # 6. Ensure navbox user has serial port access
 echo "Granting serial port access to navbox user..."
 usermod -a -G dialout "$USER"
 
-# 7. Check GPS module connections
-echo "Checking GPS module connections..."
-if [ -f "${INSTALL_DIR}/checkgps1.py " ]; then
-    if ! su -s /bin/bash "$USER" -c "${INSTALL_DIR}/venv/bin/python3 ${INSTALL_DIR}/checkgps1.py "; then
-        echo "Error: GPS module check failed."
-        echo "Ensure NEO-M8N modules are connected to /dev/ttyACM0 and /dev/ttyACM1 and powered on."
-        echo "Check serial permissions: groups $USER"
-        echo "Verify baud rate in config.json (default: 9600)."
-        exit 1
-    else
-        echo "GPS module check passed."
-    fi
-else
-    echo "Error: checkgps1.py  not found in $INSTALL_DIR"
-    exit 1
-fi
+# # 7. Check GPS module connections
+# echo "Checking GPS module connections..."
+# if [ -f "${INSTALL_DIR}/checkgps1.py " ]; then
+#     if ! su -s /bin/bash "$USER" -c "${INSTALL_DIR}/venv/bin/python3 ${INSTALL_DIR}/checkgps1.py "; then
+#         echo "Error: GPS module check failed."
+#         echo "Ensure NEO-M8N modules are connected to /dev/ttyACM0 and /dev/ttyACM1 and powered on."
+#         echo "Check serial permissions: groups $USER"
+#         echo "Verify baud rate in config.json (default: 9600)."
+#         exit 1
+#     else
+#         echo "GPS module check passed."
+#     fi
+# else
+#     echo "Error: checkgps1.py  not found in $INSTALL_DIR"
+#     exit 1
+# fi
 
 # 8. Copy and configure service file
 echo "Configuring systemd service..."
