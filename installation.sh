@@ -95,7 +95,7 @@ chown -R "$USER:$USER" "$INSTALL_DIR"
 
 # 5. Copy application files
 echo "Copying application files..."
-for file in config.json gps_logger.py heading_calc.py main.py retry_queue.json check_gps.py index.html; do
+for file in config.json gps_logger.py heading_calc.py main.py retry_queue.json checkgps1.py  index.html; do
     if [ -f "${SCRIPT_DIR}/${file}" ]; then
         cp "${SCRIPT_DIR}/${file}" "$INSTALL_DIR/"
         chown "$USER:$USER" "${INSTALL_DIR}/${file}"
@@ -105,12 +105,12 @@ for file in config.json gps_logger.py heading_calc.py main.py retry_queue.json c
         echo "Warning: $file not found in ${SCRIPT_DIR}"
     fi
 done
-# Ensure main.py and check_gps.py are executable
+# Ensure main.py and checkgps1.py  are executable
 if [ -f "${INSTALL_DIR}/main.py" ]; then
     chmod +x "${INSTALL_DIR}/main.py"
 fi
-if [ -f "${INSTALL_DIR}/check_gps.py" ]; then
-    chmod +x "${INSTALL_DIR}/check_gps.py"
+if [ -f "${INSTALL_DIR}/checkgps1.py " ]; then
+    chmod +x "${INSTALL_DIR}/checkgps1.py "
 fi
 
 # 6. Ensure navbox user has serial port access
@@ -119,8 +119,8 @@ usermod -a -G dialout "$USER"
 
 # 7. Check GPS module connections
 echo "Checking GPS module connections..."
-if [ -f "${INSTALL_DIR}/check_gps.py" ]; then
-    if ! su -s /bin/bash "$USER" -c "${INSTALL_DIR}/venv/bin/python3 ${INSTALL_DIR}/check_gps.py"; then
+if [ -f "${INSTALL_DIR}/checkgps1.py " ]; then
+    if ! su -s /bin/bash "$USER" -c "${INSTALL_DIR}/venv/bin/python3 ${INSTALL_DIR}/checkgps1.py "; then
         echo "Error: GPS module check failed."
         echo "Ensure NEO-M8N modules are connected to /dev/ttyACM0 and /dev/ttyACM1 and powered on."
         echo "Check serial permissions: groups $USER"
@@ -130,7 +130,7 @@ if [ -f "${INSTALL_DIR}/check_gps.py" ]; then
         echo "GPS module check passed."
     fi
 else
-    echo "Error: check_gps.py not found in $INSTALL_DIR"
+    echo "Error: checkgps1.py  not found in $INSTALL_DIR"
     exit 1
 fi
 
